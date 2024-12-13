@@ -13,15 +13,22 @@ $destinations = $query->fetchAll(PDO::FETCH_ASSOC);
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cherry+Cream+Soda&family=Markazi+Text:wght@400..700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/font.css">
     <title>Document</title>
 </head>
-<body class="px-20">
-    <?php foreach ($destinations as $destination){ ?>
-        <div class="flex flex-col items-center bg-blue-400 rounded-lg overflow-hidden">
-            <h1 class="text-white"><?= $destination['location'] ?></h1>
-            <img src="assets/img/<?= $destination['location'] ?>.jpg" alt="<?= $destination['location'] ?>">
-        </div>
-    <?php } ?>
+<body class="flex flex-col items-center">
+    <header class="bg-green-400 w-full h-12 flex flex-row items-center border-b border-black justify-center mb-10">
+        <img class="h-full" src="assets/img/logo.png" alt="logo">
+        <h1 class="ml-6 cherry text-white text-xl">Comparoperator</h1>
+    </header>
+    <span class="markazi mb-4 text-2xl">Destinations</span>
+    <div class="flex flex-row flex-wrap justify-center drop-shadow-2xl">
+        <?php foreach ($destinations as $destination){ ?>
+            <a href="tour-operator.php?location=<?= $destination['location'] ?>"><div class="w-72 h-52 flex flex-col items-center bg-blue-400 rounded-lg overflow-hidden m-6 hover:scale-105 cursor-pointer">
+                <h1 class="text-white my-1 markazi text-3xl"><?= $destination['location'] ?></h1>
+                <img class="w-full h-full" src="assets/img/<?= $destination['location'] ?>.jpg" alt="<?= $destination['location'] ?>">
+            </div></a>
+        <?php } ?>
+    </div>
 </body>
 </html>
