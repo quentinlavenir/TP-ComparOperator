@@ -30,5 +30,6 @@ $destinations = $query->fetchAll(PDO::FETCH_ASSOC);
             </div></a>
         <?php } ?>
     </div>
+<script src="assets/js/script.js"></script>
 </body>
 </html>
