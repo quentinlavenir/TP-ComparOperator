@@ -31,4 +31,8 @@ class Destination {
     public function getLocation() {
         return $this->location;
     }
+
+    public function getId() {
+        return $this->id;
+    }
 }

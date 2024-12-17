@@ -27,7 +27,7 @@ $destinations = $manager->getDestinations();
     <span class="markazi mb-4 text-2xl">Destinations</span>
     <div class="flex flex-row flex-wrap justify-center drop-shadow-2xl">
         <?php foreach ($destinations as $destination){ ?>
-            <a href="tour-operator.php?location=<?= $destination->getLocation() ?>"><div class="w-72 h-52 flex flex-col items-center bg-blue-400 rounded-lg overflow-hidden m-6 hover:scale-105 cursor-pointer">
+            <a href="tour-operator.php?destination-id=<?= $destination->getId() ?>"><div class="w-72 h-52 flex flex-col items-center bg-blue-400 rounded-lg overflow-hidden m-6 hover:scale-105 cursor-pointer">
                 <h1 class="text-white my-1 markazi text-3xl"><?= $destination->getLocation() ?></h1>
                 <img class="w-full h-full" src="assets/img/<?= $destination->getLocation() ?>.jpg" alt="<?= $destination->getLocation() ?>">
             </div></a>
