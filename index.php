@@ -24,14 +24,17 @@ $destinations = $manager->getDestinations();
         <img class="h-full" src="assets/img/logo.png" alt="logo">
         <h1 class="ml-6 cherry text-white text-xl">Comparoperator</h1>
     </header>
-    <span class="markazi mb-4 text-2xl">Destinations</span>
-    <div class="flex flex-row flex-wrap justify-center drop-shadow-2xl">
-        <?php foreach ($destinations as $destination){ ?>
-            <a href="tour-operator.php?destination-id=<?= $destination->getId() ?>"><div class="w-72 h-52 flex flex-col items-center bg-blue-400 rounded-lg overflow-hidden m-6 hover:scale-105 cursor-pointer">
-                <h1 class="text-white my-1 markazi text-3xl"><?= $destination->getLocation() ?></h1>
-                <img class="w-full h-full" src="assets/img/<?= $destination->getLocation() ?>.jpg" alt="<?= $destination->getLocation() ?>">
-            </div></a>
-        <?php } ?>
+    <div class="flex flex-col px-5">
+        <span class="markazi mb-4 text-2xl ml-6">Destinations</span>
+        <div class="flex flex-row flex-wrap">
+            <?php foreach ($destinations as $destination){ ?>
+                <a href="tour-operator.php?destination_id=<?= $destination->getId() ?>"><div class="w-72 flex flex-col items-center bg-blue-400 rounded-lg overflow-hidden m-6 hover:scale-105 cursor-pointer drop-shadow-2xl">
+                    <h1 class="text-white my-1 markazi text-3xl"><?= $destination->getLocation() ?></h1>
+                    <img class="w-full h-44" src="assets/img/<?= $destination->getLocation() ?>.jpg" alt="<?= $destination->getLocation() ?>">
+                    <p class="bg-white markazi text-xl w-full h-full p-5"><?= $destination->getDescription() ?></p>
+                </div></a>
+            <?php } ?>
+        </div>
     </div>
 <script src="assets/js/script.js"></script>
 </body>

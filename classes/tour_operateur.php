@@ -6,6 +6,7 @@ class Tour_operateur {
     private $link;
     private $score;
     private $isPremium;
+    private $description;
 
     public function __construct($data) {
         $this->id = $data['id'];
@@ -13,6 +14,7 @@ class Tour_operateur {
         $this->link = $data['link'];
         $this->score = $data['score'];
         $this->isPremium = $data['isPremium'];
+        $this->description = $data['description'];
     }
 
     public function __tostring() {
@@ -20,7 +22,8 @@ class Tour_operateur {
             name: {$this->name},<br>
             link: {$this->link},<br>
             score: {$this->score},<br>
-            isPremium: {$this->getIsPremiumToString()}";
+            isPremium: {$this->getIsPremiumToString()}
+            description: {$this->description}";
     }
 
     public function getIsPremiumToString() {
@@ -37,5 +40,21 @@ class Tour_operateur {
 
     public function getName() {
         return $this->name;
+    }
+
+    public function getLink() {
+        return $this->link;
+    }
+
+    public function getScore() {
+        return $this->score;
+    }
+
+    public function getIsPremium() {
+        return $this->isPremium;
+    }
+
+    public function getDescription() {
+        return $this->description;
     }
 }

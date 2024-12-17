@@ -1,6 +1,13 @@
 <?php
 class Manager {
     private $db;
+    const TOUR_OPERATOR_DESCRIPTION = ["Un des plus anciens tours opérateurs français, spécialisé dans les voyages sur mesure et les séjours tout compris en France et à l'international",
+        "Référence historique des vacances organisées, propose des séjours balnéaires, circuits culturels et clubs de vacances dans le monde entier.",
+        "Spécialiste des vacances culturelles, séjours en bord de mer et escapades nature, en France et en Europe."];
+
+    const DESTINATION_DESCRIPTION = ["Plages paradisiaques, temples mystiques et rizières verdoyantes, offre une immersion entre détente et spiritualité, idéale pour les amoureux de nature et de culture.",
+        "Cette ancienne capitale impériale séduit par ses temples millénaires, ses jardins zen et ses ruelles authentiques où le charme traditionnel prend vie.",
+        "Aux portes des paysages volcaniques et des aurores boréales, offre une ambiance chaleureuse où nature sauvage et modernité nordique se rencontrent."];
 
     public function __construct($db) {
         $this->db = $db;
@@ -17,6 +24,7 @@ class Manager {
             $array['location'] = $i['location'];
             $array['price'] = $i['price'];
             $array['tourOperatorId'] = $this->getTourOperatorIdWithDestinationId($i['id']);
+            $array['description'] = self::DESTINATION_DESCRIPTION[rand(0, 2)];
             $destinationsValue[] = $array; 
         }
 
@@ -49,6 +57,7 @@ class Manager {
             $array['link'] = $i['link'];
             $array['score'] = $this->getScoreWithTourOperatorId($i['id']);
             $array['isPremium'] = $this->getIsPremiumWithTourOperatorId($i['id']);
+            $array['description'] = $i['description'];
             $tourOperatorsValue[] = $array;
         }
 
@@ -126,8 +135,26 @@ class Manager {
         $array['link'] = $response['link'];
         $array['score'] = $this->getScoreWithTourOperatorId($response['id']);
         $array['isPremium'] = $this->getIsPremiumWithTourOperatorId($response['id']);
+        $array['description'] = $response['description'];
 
         return new Tour_operateur($array);
+    }
+
+    public function getDestinationWithId($destinationId) {
+        $query = $this->db->prepare('SELECT * FROM destination WHERE id = :destination_id');
+        $query->execute([
+            'destination_id' => $destinationId
+        ]);
+        $response = $query->fetch(PDO::FETCH_ASSOC);
+
+        $array = [];
+        $array['id'] = $response['id'];
+        $array['location'] = $response['location'];
+        $array['price'] = $response['price'];
+        $array['tourOperatorId'] = $this->getTourOperatorIdWithDestinationId($response['id']);
+        $array['description'] = self::DESTINATION_DESCRIPTION[rand(0, 2)];
+
+        return new Destination($array);
     }
 
     public function addDestinationToTourOperator($tourOperatorId, $destinationId) {
@@ -175,12 +202,81 @@ class Manager {
     }
 
     public function addTourOperator($name, $link) {
-        $query = $this->db->prepare('INSERT INTO tour_operator (name, link) VALUES (:name, :link)');
+        $query = $this->db->prepare('INSERT INTO tour_operator (name, link, description) VALUES (:name, :link, :description)');
         $query->execute([
             'name' => $name,
-            'link' => $link
+            'link' => $link,
+            'description' => self::TOUR_OPERATOR_DESCRIPTION[rand(0, 2)]
         ]);
 
         return "Tour opérateur ajouté";
+    }
+
+    public function getReviewsWithTourOperatorId($tourOperatorId) {
+        $query = $this->db->prepare('SELECT * FROM review WHERE tour_operator_id = :tour_operator_id');
+        $query->execute([
+            'tour_operator_id' => $tourOperatorId
+        ]);
+        $response = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        $reviewsValue = [];
+        foreach ($response as $i) {
+            $array = [];
+            $array['id'] = $i['id'];
+            $array['message'] = $i['message'];
+            $array['authorId'] = $i['author_id'];
+            $array['tourOperatorId'] = $i['tour_operator_id'];
+            $reviewsValue[] = $array;
+        }
+
+        $reviews = [];
+        foreach ($reviewsValue as $i) {
+            $reviews[] = new Review($i);
+        }
+
+        return $reviews;
+    }
+
+    public function addReview($message, $author, $tourOperatorId) {
+        $this->checkIfAuthorExists($author);
+        $authorId = $this->getAuthorIdWithName($author);
+
+        $query = $this->db->prepare('INSERT INTO review (message, author_id, tour_operator_id) VALUES (:message, :author_id, :tour_operator_id)');
+        $query->execute([
+            'message' => $message,
+            'author_id' => $authorId,
+            'tour_operator_id' => $tourOperatorId
+        ]);
+
+        return "Avis ajouté";
+    }
+
+    public function checkIfAuthorExists($author) {
+        $query = $this->db->prepare('SELECT * FROM author WHERE name = :name');
+        $query->execute([
+            'name' => $author
+        ]);
+        $response = $query->fetch(PDO::FETCH_ASSOC);
+
+        if (!$response) {
+            $this->addAuthor($author);
+        }
+    }
+
+    public function addAuthor($name) {
+        $query = $this->db->prepare('INSERT INTO author (name) VALUES (:name)');
+        $query->execute([
+            'name' => $name
+        ]);
+
+        return "Auteur ajouté";
+    }
+
+    public function getAuthorIdWithName($name) {
+        $query = $this->db->prepare('SELECT id FROM author WHERE name = :name');
+        $query->execute([
+            'name' => $name
+        ]);
+        return $query->fetch(PDO::FETCH_COLUMN);
     }
 }

@@ -18,4 +18,8 @@ class Review {
             authorId: {$this->authorId},<br>
             tourOperatorId: {$this->tourOperatorId}";
     } 
+
+    public function getMessage() {
+        return $this->message;
+    }
 }
