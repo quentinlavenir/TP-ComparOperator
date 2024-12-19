@@ -238,8 +238,17 @@ class Manager {
     }
 
     public function addReview($message, $author, $tourOperatorId) {
-        $this->checkIfAuthorExists($author);
+        $response = $this->checkIfAuthorExists($author);
+        if (!$response) {
+            $this->addAuthor($author);
+        }
+
         $authorId = $this->getAuthorIdWithName($author);
+
+        $response = $this->checkIfAuthorAlreadyReviewed($authorId, $tourOperatorId);
+        if ($response != false) {
+            return "Vous avez déja lesser un avis";
+        }
 
         $query = $this->db->prepare('INSERT INTO review (message, author_id, tour_operator_id) VALUES (:message, :author_id, :tour_operator_id)');
         $query->execute([
@@ -256,11 +265,7 @@ class Manager {
         $query->execute([
             'name' => $author
         ]);
-        $response = $query->fetch(PDO::FETCH_ASSOC);
-
-        if (!$response) {
-            $this->addAuthor($author);
-        }
+        return $query->fetch(PDO::FETCH_ASSOC);
     }
 
     public function addAuthor($name) {
@@ -272,11 +277,52 @@ class Manager {
         return "Auteur ajouté";
     }
 
+    public function checkIfAuthorAlreadyReviewed($authorId, $tourOperatorId) {
+        $query = $this->db->prepare('SELECT * FROM review WHERE author_id = :author_id AND tour_operator_id = :tour_operator_id');
+        $query->execute([
+            'author_id' => $authorId,
+            'tour_operator_id' => $tourOperatorId
+        ]);
+        return $query->fetch(PDO::FETCH_ASSOC);
+    }
+
     public function getAuthorIdWithName($name) {
         $query = $this->db->prepare('SELECT id FROM author WHERE name = :name');
         $query->execute([
             'name' => $name
         ]);
         return $query->fetch(PDO::FETCH_COLUMN);
+    }
+
+    public function rateTourOperator($tourOperatorId, $rate, $author) {
+        $response = $this->checkIfAuthorExists($author);
+        if (!$response) {
+            $this->addAuthor($author);
+        }
+
+        $authorId = $this->getAuthorIdWithName($author);
+
+        $response = $this->checkIfAuthorAlreadyRated($authorId, $tourOperatorId);
+        if ($response != false) {
+            return "Vous avez deja lesser une note";
+        }
+
+        $query = $this->db->prepare('INSERT INTO score (value, author_id, tour_operator_id) VALUES (:value, :author_id, :tour_operator_id)');
+        $query->execute([
+            'value' => $rate,
+            'author_id' => $authorId,
+            'tour_operator_id' => $tourOperatorId
+        ]);
+
+        return "Note ajoutée";
+    }
+
+    public function checkIfAuthorAlreadyRated($authorId, $tourOperatorId) {
+        $query = $this->db->prepare('SELECT * FROM score WHERE author_id = :author_id AND tour_operator_id = :tour_operator_id');
+        $query->execute([
+            'author_id' => $authorId,
+            'tour_operator_id' => $tourOperatorId
+        ]);
+        return $query->fetch(PDO::FETCH_ASSOC);
     }
 }
